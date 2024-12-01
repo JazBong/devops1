@@ -1,0 +1,69 @@
+---
+- name: Установка Docker и Docker Compose на ноды
+  hosts: all
+  become: true
+  tasks:
+    - name: Обновление списка пакетов
+      apt:
+        update_cache: yes
+
+    - name: Установка зависимостей
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Добавление официального ключа GPG Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Добавление репозитория Docker
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Обновление кэша пакетов после добавления репозитория
+      apt:
+        update_cache: yes
+
+    - name: Установка Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Убедиться, что Docker запущен
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Добавление пользователя vagrant в группу docker
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+          
+    - name: Загрузка последней версии Docker Compose
+      ansible.builtin.command:
+        cmd: >
+          curl -L --http1.1 "https://github.com/docker/compose/releases/download/v2.26.0/docker-compose-$(uname -s)-$(uname -m)"
+          -o /usr/local/bin/docker-compose
+      args:
+        creates: /usr/local/bin/docker-compose
+
+
+    - name: Установка прав на Docker Compose
+      ansible.builtin.file:
+        path: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Проверка версии Docker Compose
+      ansible.builtin.command:
+        cmd: docker-compose --version

@@ -1,0 +1,15 @@
+---
+- name: Клонирование репозитория на ноды группы [app]
+  hosts: app
+  become: true
+  tasks:
+    - name: Убедиться, что Git установлен
+      apt:
+        name: git
+        state: present
+
+    - name: Клонирование репозитория
+      git:
+        repo: https://github.com/mdn/django-locallibrary-tutorial.git
+        dest: /opt/django-locallibrary
+        version: main

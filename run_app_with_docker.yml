@@ -1,0 +1,35 @@
+---
+- name: Запуск Django-приложения через Docker
+  hosts: app
+  become: true
+  tasks:
+    - name: Убедиться, что Docker запущен
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Убедиться, что Docker Compose установлен
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Создать директорию для приложения
+      ansible.builtin.file:
+        path: /opt/django-locallibrary
+        state: directory
+
+    - name: Скопировать Dockerfile
+      copy:
+        src: ./Dockerfile
+        dest: /opt/django-locallibrary/Dockerfile
+
+    - name: Скопировать docker-compose.yml
+      copy:
+        src: ./docker-compose.yml
+        dest: /opt/django-locallibrary/docker-compose.yml
+
+    - name: Запустить контейнеры
+      ansible.builtin.command:
+        cmd: docker-compose up -d
+        chdir: /opt/django-locallibrary
