@@ -1,0 +1,22 @@
+---
+all:
+  children:
+    web:
+      hosts:
+        node1:
+          ansible_host: 127.0.0.1
+          ansible_user: vagrant
+          ansible_port: 2222
+          ansible_ssh_private_key_file: /home/mrsta/.ssh/vagrant_private_key
+      vars:
+        worker_processes: 2
+        worker_connections: 2048
+        server_port: 8080
+        server_name: _
+    app:
+      hosts:
+        node2:
+          ansible_host: 127.0.0.1
+          ansible_user: vagrant
+          ansible_port: 2222
+          ansible_ssh_private_key_file: /home/mrsta/.ssh/vagrant_private_key

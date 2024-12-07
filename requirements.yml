@@ -1,0 +1,8 @@
+---
+- src: git+https://gitlab.com/ansible-roles8034249/docker-role.git
+  version: main
+  name: Docker
+
+- src: git+https://gitlab.com/ansible-roles8034249/nginx-role.git
+  version: main
+  name: nginx
